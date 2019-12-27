@@ -1,7 +1,6 @@
-export const tabClose = (payload) => {
+export const tabClose = () => {
     return {
-        type : 'TAB_CLOSE',
-        payload
+        type : 'TAB_CLOSE'
     }
 }
 

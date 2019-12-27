@@ -1,12 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { tabClose, tabSwitch } from '../state/actions';
 
-const Tab = ({ data, active, tabClickHandler, closeTabHandler }) => {
+
+const Tab = ({ data, active }) => {
+
+    const dispatch = useDispatch();
 
     return (
-        <Style active={ active } onClick={ () => tabClickHandler(data.id) }>
-            { data.title } <i className="fa fa-times" onClick={ () => closeTabHandler(data.id) }/>
+        <Style active={ active } onClick={ () => dispatch(tabSwitch({ currentTab : data.id })) }>
+            { data.title } <i className="fa fa-times" onClick={ () => dispatch(tabClose()) }/>
         </Style>
     );
 }
