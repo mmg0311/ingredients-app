@@ -1,23 +1,30 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { Tab } from './';
+import { tabClose, tabSwitch } from '../state/actions';
 
 const Tabs = () => {
 
-    const [currentTab, setCurrentTab] = React.useState(0); // ID of the Tab
-    const [tabs, setTabs] = React.useState([{ id : 0, title : 'Home' }, { id : 1, title : 'About' }]);
+    const dispatch = useDispatch();
+    const { tabs, currentTab } = useSelector(state => state.tabs);
 
     const tabClickHandler = (id) => {
-        setCurrentTab(id);
+        dispatch(tabSwitch({ currentTab : id }));
     }
 
     const closeTabHandler = (id) => {
         let index = tabs.findIndex((tab) => tab.id === id);
-        setTabs(tabs.filter(tab => tab.id !== id));
+        let updateTabs = tabs.filter(tab => tab.id !== id);
         if (tabs.length) {
+            let updatedCurrentTab;
             // Issue here: doesn't switch the tab even if current index is changed.
-            index === 0 ? setCurrentTab(tabs[0].id) : setCurrentTab(tabs[index - 1].id);
+            index === 0 ? updatedCurrentTab = tabs[0].id : updatedCurrentTab = tabs[index - 1].id;
+            console.log(updatedCurrentTab);
+            dispatch(tabClose({ tabs : updateTabs, currentTab : updatedCurrentTab }));
+        } else {
+            dispatch(tabClose({ tabs : [] }))
         }
     }
 
