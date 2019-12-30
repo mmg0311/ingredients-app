@@ -44,8 +44,6 @@ const Home = () => {
 export default Home;
 
 const Style = styled.div`
-    padding: 50px;
-
     .header {
         display: flex;
         justify-content: space-between;

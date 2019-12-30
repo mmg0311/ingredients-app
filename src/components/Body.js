@@ -5,30 +5,20 @@ import styled from "styled-components";
 import {Home, Ingredients, Stations} from './';
 
 const Body = () => {
-  let content;
+  const [content, setContent] = React.useState(undefined);
   const { tabs, currentTab } = useSelector(state => state.tabs);
 
   React.useEffect(() => {
     let showTab = tabs.filter(tab => tab.id === currentTab);
-    if (showTab.length) content = showTab[0].title;
-    console.log(content);
-  }, []);
-
-  React.useEffect(() => {
-    let showTab = tabs.filter(tab => tab.id === currentTab);
-    if (showTab.length) content = showTab[0].title;
-    console.log(content);
+    if (showTab.length) setContent(showTab[0].title);
+    else setContent(undefined);
   }, [currentTab]);
 
   const whatToDisplay = () => {
-      console.log('running...')
-      console.log(typeof content); // Always returns undefined
     switch (content) {
         case 'Ingredients':
-            console.log('Opening Ingredients...');
             return <Ingredients />;
         case 'Stations':
-            console.log('Opening Stations...');
             return <Stations />;
         default:
             return <Home />;
@@ -40,4 +30,6 @@ const Body = () => {
 
 export default Body;
 
-const Style = styled.div``;
+const Style = styled.div`
+    padding: 50px;
+`;

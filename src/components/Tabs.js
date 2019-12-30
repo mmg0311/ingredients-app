@@ -11,7 +11,7 @@ const Tabs = () => {
     return (
         <Style>
             {
-                tabs.length && tabs.map(tab => <Tab key={ tab.id } data={ tab } active={ currentTab === tab.id } />)
+                tabs.map(tab => <Tab key={ tab.id } data={ tab } active={ currentTab === tab.id } />)
             }
         </Style>
     );

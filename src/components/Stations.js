@@ -3,7 +3,7 @@ import React from 'react';
 const Stations = () => {
     return (
         <>
-        Hello
+        Stations
         </>
     )
 }
