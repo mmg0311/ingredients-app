@@ -51,7 +51,7 @@ const Style = styled.div`
 
     .content {
         display: flex;
-        justify-content: space-around;
+        justify-content: center;
         margin-top: 40px;
 
         .card {
@@ -62,6 +62,11 @@ const Style = styled.div`
             padding: 24px;
             padding-top: 60px;
             color: #555B6E;
+            background: #fff;
+
+            &:not(:last-child) {
+                margin-right: 100px;
+            }
 
             .card-text {
                 flex: 1;
