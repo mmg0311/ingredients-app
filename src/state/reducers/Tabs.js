@@ -1,10 +1,14 @@
 const initialState = {
-    tabs : [{ id : 0, title : 'Ingredients'}, { id : 1, title : 'Stations'}],
+    tabs : [],
     currentTab : 0
 }
 
 const tabsReducer = (state = initialState, action) => {
     switch(action.type) {
+        case 'NEW_TAB':
+            let check = state.tabs.find(tab => tab.id === action.payload.id);
+            if (check) return { ...state, currentTab : check.id };
+            else return { ...state, tabs : [...state.tabs, action.payload], currentTab : action.payload.id };
         case 'TAB_CLOSE':
             let updatedCurrentTab;
             let updatedTabs = state.tabs;

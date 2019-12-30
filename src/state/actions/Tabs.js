@@ -10,3 +10,10 @@ export const tabSwitch = (payload) => {
         payload
     }
 }
+
+export const newTab = (payload) => {
+    return {
+        type : 'NEW_TAB',
+        payload
+    }
+}
