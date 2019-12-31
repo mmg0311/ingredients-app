@@ -71,8 +71,13 @@ const Style = styled.div`
             .card-text {
                 flex: 1;
 
+                h2 {
+                    margin-bottom: 1rem;
+                }
+
                 p {
                     font-weight: 500;
+                    margin-bottom: 1rem;
                 }
             }
 
@@ -91,7 +96,7 @@ const Style = styled.div`
             }
 
             &:hover {
-                background: #F8F8F8;
+                background: rgba(50, 50, 50, 0.1);
             }
         }
     }
