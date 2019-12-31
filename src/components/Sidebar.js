@@ -35,7 +35,7 @@ const Sidebar = () => {
 export default Sidebar;
 
 const Icon = styled.span`
-    padding: 5px 8px;
+    padding: 6px 10px;
     background: #D9E9F1;
     color: #555B6E;
     font-size: 2rem;

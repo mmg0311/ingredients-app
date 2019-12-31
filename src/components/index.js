@@ -7,6 +7,7 @@ import Body from './Body';
 import Tabs from './Tabs';
 import Tab from './Tab';
 import Sidebar from './Sidebar';
+import Table from './Table';
 
 export {
     Tabs,
@@ -17,5 +18,6 @@ export {
     PageHeading,
     Stations,
     Body,
-    Sidebar
+    Sidebar,
+    Table
 }

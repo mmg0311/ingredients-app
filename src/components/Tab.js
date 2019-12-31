@@ -22,7 +22,8 @@ const Style = styled.span(
         background: ${ active ? '#fff' : 'rgba(255, 255, 255, 0.5);' };
         padding: 15px;
         color: #555B6E;
-
+        font-weight: 500;
+        
         i {
             margin-left: 28px;
             display: ${ active ? 'inline' : 'none' };
