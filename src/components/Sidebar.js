@@ -1,9 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import { ReactSVG } from 'react-svg';
+
+import { newTab } from '../state/actions';
 
 const Sidebar = () => {
 
+    const dispatch = useDispatch();
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (
@@ -17,8 +21,8 @@ const Sidebar = () => {
                 <i className="fas fa-times"></i>
             </span>
             <ul className="nav-list-top">
-               <li> Ingredients </li>
-               <li> Stations </li> 
+               <li onClick={ () => {dispatch(newTab({ id : 1, title : 'Ingredients' })); setIsOpen(false);} }> Ingredients </li>
+               <li onClick={ () => {dispatch(newTab({ id : 2, title : 'Stations' })); setIsOpen(false);} }> Stations </li> 
             </ul>
             <ul className="nav-list-bottom">
                 <li> <i className="fas fa-cog"></i> Manage Settings </li>
@@ -31,7 +35,7 @@ const Sidebar = () => {
 export default Sidebar;
 
 const Icon = styled.span`
-    padding: 5px 8px;
+    padding: 6px 10px;
     background: #D9E9F1;
     color: #555B6E;
     font-size: 2rem;

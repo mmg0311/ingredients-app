@@ -1,12 +1,12 @@
 import React from 'react';
 
-import {Tabs} from '../components';
+import { Header,Body } from '../components';
 
 const Home = () => {
     return (
         <>
-            <Tabs />
-            Home
+            <Header />
+            <Body />
         </>
     );
 }

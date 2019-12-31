@@ -1,0 +1,147 @@
+{
+    "name": "Oil",
+    "allergens" : [
+        {
+            "id" : "1",
+            "name" : "Nuts"
+        },
+        {
+            "id" : "2",
+            "name" : "Oil"
+        }
+    ],
+    "images" : [
+        {
+            "id": "1",
+            "url": "www.google.com/images"
+        },
+        {
+            "id": "1",
+            "url": "www.google.com/images"
+        }
+    ],
+    "processing":[
+        {
+            "process" : "Portioning",
+            "cost" : "10 USD",
+            "yield" : "90%",
+            "bulk_density" : "10%",
+            "equipment": [
+                {	
+                    "id": "1",
+                    "name": "container"
+                },
+                {
+                    "id": "2",
+                    "name": "spoon"
+                }
+            ],
+            "image": "www.google.com/abc/def.jpg",
+            "standard_operating_procedure": "www.google.com/abc/def.txt",
+            "nutritional_values" : {
+                "calories" : {
+                    "id" : "1",
+                    "value" : "200",
+                    "unit" : "joules"
+                },
+                "fat" : {
+                    "id" : "2",
+                    "value" : "200",
+                    "unit" : "gms"
+                },
+                "protien" : {
+                    "id" : "3",
+                    "value" : "200",
+                    "unit" : "gms"
+                },
+                "carbs" : {
+                    "id" : "4",
+                    "value" : "200",
+                    "unit" : "gms"
+                }
+            },
+            "sachet":[
+                {
+                    "quantity": "10 gm",
+                    "track_inventory": true,
+                    "mode_of_fulfillment" : [
+                        {
+                            "type": "Real Time",
+                            "station": {
+                                "id": "1",
+                                "name" : "Meat Station",
+                                "type" : "packaging"
+                            },
+                            "supplier_items": [
+                                {
+                                    "id" : "1",
+                                    "name" : "Jaipuri"
+                                },
+                                {
+                                    "id" : "2",
+                                    "name" : "Kolhapuri"
+                                }
+                            ],
+                            "accuracy_level": "85-100%",
+                            "packaging" : [
+                                {
+                                    "id" : 1,
+                                    "name" : "Small Packaging"
+                                },
+                                {
+                                    "id" : 2,
+                                    "name" : "Medium Packaging"
+                                }
+                            ],                                    
+                            "label": {
+                                "template":{
+                                    "id": "1",
+                                    "title" : "Temp 1"
+                                },
+                                "slip_name" : "Oil",
+                                "add_label" : true
+                            }
+                        },
+                        {
+                            "type": "Copackers",
+                            "station": {
+                                "id": "1",
+                                "name" : "Meat Station",
+                                "type" : "packaging"
+                            },
+                            "supplier_items": [
+                                {
+                                    "id" : "1",
+                                    "name" : "Jaipuri"
+                                },
+                                {
+                                    "id" : "2",
+                                    "name" : "Kolhapuri"
+                                }
+                            ],
+                            "accuracy_level": "85-100%",
+                            "packaging" : [
+                                {
+                                    "id" : 1,
+                                    "name" : "Small Packaging"
+                                },
+                                {
+                                    "id" : 2,
+                                    "name" : "Medium Packaging"
+                                }
+                            ], 
+                            "label": {
+                                "template":{
+                                    "id": "1",
+                                    "title" : "Temp 1"
+                                },
+                                "slip_name" : "Oil",
+                                "add_label" : true
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
