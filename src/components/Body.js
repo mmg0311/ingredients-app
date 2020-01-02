@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 
-import {Home, Ingredients, Stations} from './';
+import {Home, Ingredients, Stations, Ingredient} from './';
 
 const Body = () => {
   const [content, setContent] = React.useState(undefined);
@@ -20,6 +20,8 @@ const Body = () => {
             return <Ingredients />;
         case 'Stations':
             return <Stations />;
+        case 'New Ingredient':
+            return <Ingredient />;
         default:
             return <Home />;
     }

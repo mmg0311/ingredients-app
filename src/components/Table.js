@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { PageHeading } from './';
 
-const Table = () => {
+const Table = ({ addButtonHandler }) => {
 
     const [currentCount, setCurrentCount] = React.useState(50);
     const [totalCount, setTotalCount] = React.useState(1350);
@@ -28,7 +28,7 @@ const Table = () => {
                     <div className="search">
                         Search here
                     </div>
-                    <div className="add">
+                    <div className="add" onClick={ addButtonHandler }>
                         Add button
                     </div>
                 </div>
