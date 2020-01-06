@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { PageHeading } from './';
 
-const Table = ({ addButtonHandler }) => {
+const Table = ({ columns, data, addButtonHandler }) => {
 
     const [currentCount, setCurrentCount] = React.useState(50);
     const [totalCount, setTotalCount] = React.useState(1350);
@@ -37,37 +37,29 @@ const Table = ({ addButtonHandler }) => {
                 <table>
                     <thead>
                         <tr>
-                            <th> Select </th>
-                            <th> Ingredient Name </th>
-                            <th> Variant </th>
-                            <th> Modes of Fulfillment </th>
-                            <th> Stations </th>
-                            <th> Supplier Item </th>
-                            <th> Availability </th>
-                            <th></th>
+                            {
+                                Object.keys(columns).map((key) => {
+                                    if (key === 'select' && columns.select) return <th key={ key }> Select </th>
+                                    if (key === 'actions' && columns.actions) return <th key={ key }></th>
+                                    return <th key={ key }> { columns[key] } </th>
+                                }) 
+                            }
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td> Select </td>
-                            <td> Potato </td>
-                            <td> 200gm, Portioned </td>
-                            <td> Real-time, Co-packer </td>
-                            <td> Station 1, Station 2 </td>
-                            <td> Item 1, Item 2 </td>
-                            <td> true </td>
-                            <td> edit delete </td>
-                        </tr>
-                        <tr>
-                            <td> Select </td>
-                            <td> Red Cabbage </td>
-                            <td> 400gm, Portioned </td>
-                            <td> Real-time </td>
-                            <td> Station 1, Station 2 </td>
-                            <td> Item 1 </td>
-                            <td> false </td>
-                            <td> edit delete </td>
-                        </tr>
+                        {
+                            data.map((record, i) => (
+                                <tr key={ i }>
+                                    {
+                                        Object.keys(columns).map((key) => {
+                                            if (key === 'select' && columns.select) return <td key={ key }> select </td>
+                                            if (key === 'actions' && columns.actions) return <td key={ key }> edit delete </td>
+                                            return <td key={ key }> { record[key] } </td>
+                                        })
+                                    }
+                                </tr>
+                            ))
+                        }
                     </tbody>
                 </table>
             </div>
