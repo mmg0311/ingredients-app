@@ -9,6 +9,7 @@ import Tabs from './Tabs';
 import Tab from './Tab';
 import Sidebar from './Sidebar';
 import Table from './Table';
+import Loader from './Loader';
 
 export {
     Tabs,
@@ -21,5 +22,6 @@ export {
     Stations,
     Body,
     Sidebar,
-    Table
+    Table,
+    Loader
 }
