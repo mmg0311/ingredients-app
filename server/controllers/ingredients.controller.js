@@ -25,7 +25,12 @@ const fetchIngredients = async (req, res) => {
         if (response.data.errors) {
             throw Error('GraphQL Error');
         }
-        return res.json({ success : true, message : 'Ingredients fetched.', data : { ingredients : response.data.data.getFiles } });
+        let temp = response.data.data.getFiles;
+        let ingredients = [];
+        await temp.forEach(ing => {
+            ingredients.push(JSON.parse(JSON.parse(ing.content)));
+        })
+        return res.json({ success : true, message : 'Ingredients fetched.', data : { ingredients } });
     } catch(err) {
         console.error(err);
         return res.json({ success : false, message : err.message, data : null });
