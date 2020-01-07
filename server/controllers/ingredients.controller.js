@@ -1,5 +1,38 @@
 const axios = require('axios');
 
+const fetchIngredient = async (req, res) => {
+    try {
+        const response = await axios.post(process.env.DAILYGIT, {
+                            query : `
+                                query getFile($path: String!){
+                                    getFile(path: $path) {
+                                    name
+                                    path
+                                    content
+                                    createdAt
+                                    size
+                                    type
+                                    commits
+                                    lastSaved
+                                    }
+                                }
+                            `,
+                            variables : {
+                                "path": req.body.path
+                            }
+                        }, 
+                    );
+        if (response.data.errors) {
+            throw Error('GraphQL Error');
+        }
+        let ingredient = JSON.parse(JSON.parse(response.data.data.getFile.content));
+        return res.json({ success : true, message : 'Ingredient fetched.', data : { ingredient } });
+    } catch(err) {
+        console.error(err);
+        return res.json({ success : false, message : err.message, data : null });
+    }
+}
+
 const fetchIngredients = async (req, res) => {
     try {
         const response = await axios.post(process.env.DAILYGIT, {
@@ -28,7 +61,10 @@ const fetchIngredients = async (req, res) => {
         let temp = response.data.data.getFiles;
         let ingredients = [];
         await temp.forEach(ing => {
-            ingredients.push(JSON.parse(JSON.parse(ing.content)));
+            let temp = JSON.parse(JSON.parse(ing.content));
+            // temp = { name : temp.name, variant : temp.processing.sachet.quantity + ", " + temp.processing.process, mode_of_fulfillment : (temp.processing.sachet.mode_of_fulfillment.map((x) => x.type)).join(', '), stations : (temp.processing.sachet.mode_of_fulfillment.map((x) => x.station.name)).join(', ')}
+            temp.path = ing.path;
+            ingredients.push(temp);
         })
         return res.json({ success : true, message : 'Ingredients fetched.', data : { ingredients } });
     } catch(err) {
@@ -55,7 +91,7 @@ const addIngredient = async (req, res) => {
                                 }
                             `,
                             variables : {
-                                "path": `./../apps/Ingredients/data/ingredients/${ req.body.ingredient.category }/${ req.body.ingredient.name }.json`,
+                                "path": `./../apps/Ingredients/data/ingredients/${ req.body.ingredient.name }.json`,
                                 "content" : JSON.stringify(req.body.ingredient)
                             }
                         }, 
@@ -72,6 +108,7 @@ const addIngredient = async (req, res) => {
 
 module.exports = {
     fetchIngredients,
+    fetchIngredient,
     addIngredient
 }
 
