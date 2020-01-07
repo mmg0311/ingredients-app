@@ -1,6 +1,7 @@
 const initialState = {
     tabs : [],
-    currentTab : 0
+    currentTab : 0,
+    path : null
 }
 
 const tabsReducer = (state = initialState, action) => {
@@ -8,7 +9,7 @@ const tabsReducer = (state = initialState, action) => {
         case 'NEW_TAB':
             let check = state.tabs.find(tab => tab.id === action.payload.id);
             if (check) return { ...state, currentTab : check.id };
-            else return { ...state, tabs : [...state.tabs, action.payload], currentTab : action.payload.id };
+            else return { ...state, tabs : [...state.tabs, action.payload], currentTab : action.payload.id, path : action.payload.path };
         case 'TAB_CLOSE':
             let updatedCurrentTab;
             let updatedTabs = state.tabs;

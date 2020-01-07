@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Table, Loader } from './';
 import { newTab } from '../state/actions';
 
+
 const Ingredients = () => {
 
     const dispatch = useDispatch();

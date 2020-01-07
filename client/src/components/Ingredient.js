@@ -1,19 +1,41 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 const Ingredient = () => {
 
-    const [name, setName] = React.useState('');
+    const [loading, setLoading] = React.useState(false);
+    const [ingredient, setIngredient] = React.useState({ name : '' });
+    const tabs = useSelector(state => state.tabs);
+
+    React.useEffect(() => {
+        if(tabs.currentTab === 12) {
+            let path = tabs.tabs.filter(tab => tab.id === tabs.currentTab )[0].path;
+            (async() => {
+                try {
+                    setLoading(true);
+                    const response = await fetch('/api/ingredients/file', {
+                        method : 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body : JSON.stringify({ path })
+                    });
+                    const res = await response.json();
+                    setIngredient(res.data.ingredient);
+                    setLoading(false);
+                } catch(e) {
+                    setLoading(false);
+                    console.error(e);
+                }
+            })();
+        }
+    }, [])
 
     const saveAndExit = async () => {
         try {
-            const ingredient = {
-                name
-            }
-            const response = await fetch('/graphql', {
+            const response = await fetch('/api/ingredients', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mutation: `{ createFile { path : \'./../apps/Ingredients App/data/ingredient/ingredient/${ name }.json\', content : ${ ingredient } } }` })
+                body: JSON.stringify({ingredient})
             })
             const res = await response.json();
             console.log(res);
@@ -26,7 +48,7 @@ const Ingredient = () => {
         <Style>
             <div className="top-bar">
                 <div className="left">
-                    <input placeholder="Untitled Ingredient" value={ name } onChange={ (e) => setName(e.target.value) }/>
+                    <input placeholder="Untitled Ingredient" value={ ingredient.name } onChange={ (e) => setIngredient({ ...ingredient, name : e.target.value }) }/>
                 </div>
                 <div className="right">
                     <span>

@@ -1,12 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { IconButton } from '@dailykit/ui';
 
 import { PageHeading } from './';
+import { newTab } from '../state/actions';
 
 const Table = ({ columns, data, addButtonHandler }) => {
 
     const [currentCount, setCurrentCount] = React.useState(50);
     const [totalCount, setTotalCount] = React.useState(1350);
+    const dispatch = useDispatch();
 
     return (
         <Style>
@@ -28,8 +32,10 @@ const Table = ({ columns, data, addButtonHandler }) => {
                     <div className="search">
                         Search here
                     </div>
-                    <div className="add" onClick={ addButtonHandler }>
-                        Add button
+                    <div className="add">
+                        <IconButton type="solid" onClick={ addButtonHandler }>
+                            {/* <PlusIcon /> */}
+                        </IconButton>
                     </div>
                 </div>
             </div>
@@ -49,7 +55,7 @@ const Table = ({ columns, data, addButtonHandler }) => {
                     <tbody>
                         {
                             data.map((record, i) => (
-                                <tr key={ i }>
+                                <tr key={ i } onClick={ () => dispatch(newTab({ id : 12, title : record.name, path : record.path })) }>
                                     {
                                         Object.keys(columns).map((key) => {
                                             if (key === 'select' && columns.select) return <td key={ key }> select </td>
@@ -122,6 +128,11 @@ const Style = styled.div`
 
                 tr {
                     border: 1px solid #F3F3F3!important;
+
+                    &:hover {
+                        background: #eee;
+                        cursor: pointer;
+                    }
                 }
 
                 td {

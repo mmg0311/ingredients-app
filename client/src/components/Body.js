@@ -10,17 +10,19 @@ const Body = () => {
 
   React.useEffect(() => {
     let showTab = tabs.filter(tab => tab.id === currentTab);
-    if (showTab.length) setContent(showTab[0].title);
+    if (showTab.length) setContent(showTab[0].id);
     else setContent(undefined);
   }, [currentTab]);
 
   const whatToDisplay = () => {
     switch (content) {
-        case 'Ingredients':
+        case 1:
             return <Ingredients />;
-        case 'Stations':
+        case 2:
             return <Stations />;
-        case 'New Ingredient':
+        case 11:
+            return <Ingredient />;
+        case 12:
             return <Ingredient />;
         default:
             return <Home />;
