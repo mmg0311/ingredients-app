@@ -1,7 +1,8 @@
-import { tabClose, tabSwitch, newTab } from './Tabs';
+import { tabClose, tabSwitch, newTab, saveTabData } from './Tabs';
 
 export {
     tabClose,
     tabSwitch,
-    newTab
+    newTab,
+    saveTabData
 }

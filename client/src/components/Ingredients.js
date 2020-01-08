@@ -30,7 +30,7 @@ const Ingredients = () => {
     }, []);
 
     const addIngredienthandler = () => {
-        dispatch(newTab({ id : 11, title : 'New Ingredient' }));
+        dispatch(newTab({ type : 'form', title : 'New Ingredient' }));
     }
 
     const columns = {

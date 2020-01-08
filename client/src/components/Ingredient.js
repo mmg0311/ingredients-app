@@ -1,23 +1,34 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { Text } from '@dailykit/ui';
+
+import { saveTabData } from '../state/actions';
 
 const Ingredient = () => {
 
+    const dispatch = useDispatch();
+
+    let schema = {
+        name : ''
+    }
+
     const [loading, setLoading] = React.useState(false);
-    const [ingredient, setIngredient] = React.useState({ name : '' });
-    const tabs = useSelector(state => state.tabs);
+    const [ingredient, setIngredient] = React.useState(schema);
+    const { currentTab } = useSelector(state => state.tabs);
 
     React.useEffect(() => {
-        if(tabs.currentTab === 12) {
-            let path = tabs.tabs.filter(tab => tab.id === tabs.currentTab )[0].path;
+        if (currentTab.data) {
+            setIngredient(currentTab.data.ingredient);
+        } 
+        if(currentTab.path) {
             (async() => {
                 try {
                     setLoading(true);
                     const response = await fetch('/api/ingredients/file', {
                         method : 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body : JSON.stringify({ path })
+                        body : JSON.stringify({ path : currentTab.path })
                     });
                     const res = await response.json();
                     setIngredient(res.data.ingredient);
@@ -28,7 +39,19 @@ const Ingredient = () => {
                 }
             })();
         }
+        return () => {
+            dispatch(saveTabData({ ingredient }));
+        };
     }, [])
+
+    const handleChange = (name, value) => {
+        switch(name) {
+            case 'name':
+                setIngredient({ ...ingredient, name : { value, error : '' } });
+            default:
+                setIngredient({ ...ingredient });
+        }
+    }
 
     const saveAndExit = async () => {
         try {
@@ -48,7 +71,7 @@ const Ingredient = () => {
         <Style>
             <div className="top-bar">
                 <div className="left">
-                    <input placeholder="Untitled Ingredient" value={ ingredient.name } onChange={ (e) => setIngredient({ ...ingredient, name : e.target.value }) }/>
+                    <Text label='Unititled Ingredient' name='name' value={ ingredient.name } onChange={e => handleChange(e.target.name, e.target.value)}/>
                 </div>
                 <div className="right">
                     <span>

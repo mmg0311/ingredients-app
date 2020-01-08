@@ -11,7 +11,7 @@ const Tabs = () => {
     return (
         <Style>
             {
-                tabs.map(tab => <Tab key={ tab.id } data={ tab } active={ currentTab === tab.id } />)
+                tabs.map((tab, i) => <Tab key={ i } data={ tab } active={ currentTab.title === tab.title } />)
             }
         </Style>
     );

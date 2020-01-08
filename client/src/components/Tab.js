@@ -9,7 +9,7 @@ const Tab = ({ data, active }) => {
     const dispatch = useDispatch();
 
     return (
-        <Style active={ active } onClick={ () => dispatch(tabSwitch({ currentTab : data.id })) }>
+        <Style active={ active } onClick={ () => dispatch(tabSwitch({ currentTab : data })) }>
             { data.title } <i className="fa fa-times" onClick={ (e) => {e.stopPropagation(); dispatch(tabClose());} }/>
         </Style>
     );

@@ -17,3 +17,10 @@ export const newTab = (payload) => {
         payload
     }
 }
+
+export const saveTabData = (payload) => {
+    return {
+        type : 'SAVE_DATA',
+        payload
+    }
+}

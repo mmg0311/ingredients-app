@@ -23,7 +23,7 @@ const Home = () => {
                         <i> All available </i>
                     </div>
                     <div className="card-link">
-                        <span onClick={ () => dispatch(newTab({ id : 1, title : 'Ingredients' })) }> Go To Ingredients &gt; </span>
+                        <span onClick={ () => dispatch(newTab({ type : 'list', title : 'Ingredients' })) }> Go To Ingredients &gt; </span>
                     </div>
                 </div>
                 <div className="card">
@@ -33,7 +33,7 @@ const Home = () => {
                         <i> All active </i>
                     </div>
                     <div className="card-link">
-                        <span onClick={ () => dispatch(newTab({ id : 2, title : 'Stations' })) }> Go To Stations &gt; </span>
+                        <span onClick={ () => dispatch(newTab({ type : 'list', title : 'Stations' })) }> Go To Stations &gt; </span>
                     </div>
                 </div>
             </div>

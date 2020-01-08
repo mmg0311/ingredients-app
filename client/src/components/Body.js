@@ -5,28 +5,18 @@ import styled from "styled-components";
 import {Home, Ingredients, Stations, Ingredient} from './';
 
 const Body = () => {
-  const [content, setContent] = React.useState(undefined);
-  const { tabs, currentTab } = useSelector(state => state.tabs);
 
-  React.useEffect(() => {
-    let showTab = tabs.filter(tab => tab.id === currentTab);
-    if (showTab.length) setContent(showTab[0].id);
-    else setContent(undefined);
-  }, [currentTab]);
+  const { currentTab  } = useSelector(state => state.tabs);
 
-  const whatToDisplay = () => {
-    switch (content) {
-        case 1:
-            return <Ingredients />;
-        case 2:
-            return <Stations />;
-        case 11:
-            return <Ingredient />;
-        case 12:
+  const whatToDisplay = () => {  
+      switch (currentTab?.type) {
+        case 'list':
+            return currentTab.title === 'Ingredients' ? <Ingredients /> : <Stations />;
+        case 'form':
             return <Ingredient />;
         default:
             return <Home />;
-    }
+      }
   };
 
   return <Style>{whatToDisplay()}</Style>;

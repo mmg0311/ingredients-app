@@ -55,7 +55,7 @@ const Table = ({ columns, data, addButtonHandler }) => {
                     <tbody>
                         {
                             data.map((record, i) => (
-                                <tr key={ i } onClick={ () => dispatch(newTab({ id : 12, title : record.name, path : record.path })) }>
+                                <tr key={ i } onClick={ () => dispatch(newTab({ type : 'form', title : record.name, path : record.path })) }>
                                     {
                                         Object.keys(columns).map((key) => {
                                             if (key === 'select' && columns.select) return <td key={ key }> select </td>
