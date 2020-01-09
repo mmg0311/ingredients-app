@@ -19,7 +19,7 @@ const Ingredients = () => {
                 setLoading(true);
                 const response = await fetch('/api/ingredients');
                 const res = await response.json();
-                console.log(res);
+                // console.log(res);
                 setIngredients(res.data.ingredients);
                 setLoading(false);
             } catch(e) {

@@ -13,7 +13,7 @@ const Body = () => {
         case 'list':
             return currentTab.title === 'Ingredients' ? <Ingredients /> : <Stations />;
         case 'form':
-            return <Ingredient />;
+            return currentTab.data === undefined ? <Ingredient /> : <Ingredient data={ currentTab.data } />;
         default:
             return <Home />;
       }

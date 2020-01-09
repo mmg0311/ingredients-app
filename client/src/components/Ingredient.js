@@ -5,23 +5,20 @@ import { Text } from '@dailykit/ui';
 
 import { saveTabData } from '../state/actions';
 
-const Ingredient = () => {
+const Ingredient = ({ data }) => {
 
     const dispatch = useDispatch();
 
-    let schema = {
-        name : ''
-    }
-
     const [loading, setLoading] = React.useState(false);
-    const [ingredient, setIngredient] = React.useState(schema);
+    const [ingredient, setIngredient] = React.useState({ name : '' });
     const { currentTab } = useSelector(state => state.tabs);
 
     React.useEffect(() => {
-        if (currentTab.data) {
-            setIngredient(currentTab.data.ingredient);
-        } 
-        if(currentTab.path) {
+        console.log(data);
+        if (data) {
+            setIngredient(data.ingredient);
+        }
+        if (!data && currentTab.path) {
             (async() => {
                 try {
                     setLoading(true);
@@ -39,22 +36,20 @@ const Ingredient = () => {
                 }
             })();
         }
-        return () => {
-            dispatch(saveTabData({ ingredient }));
-        };
-    }, [])
+    }, [data])
 
-    const handleChange = (name, value) => {
-        switch(name) {
-            case 'name':
-                setIngredient({ ...ingredient, name : { value, error : '' } });
-            default:
-                setIngredient({ ...ingredient });
-        }
+    React.useEffect(() => {
+        dispatch(saveTabData({ currentTab, ingredient }));
+    }, [ingredient])
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setIngredient({ ...ingredient, [name] : value });
     }
 
     const saveAndExit = async () => {
         try {
+            console.log(ingredient);
             const response = await fetch('/api/ingredients', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -71,7 +66,7 @@ const Ingredient = () => {
         <Style>
             <div className="top-bar">
                 <div className="left">
-                    <Text label='Unititled Ingredient' name='name' value={ ingredient.name } onChange={e => handleChange(e.target.name, e.target.value)}/>
+                    <Text label='Unititled Ingredient' name='name' value={ ingredient.name } onChange={e => handleChange(e)}/>
                 </div>
                 <div className="right">
                     <span>

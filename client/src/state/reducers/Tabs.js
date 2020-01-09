@@ -9,11 +9,15 @@ const initialState = {
 const tabsReducer = (state = initialState, action) => {
     switch(action.type) {
         case 'NEW_TAB':
-            let check = state.tabs.find(tab => tab.title === action.payload.title);
+            {
+                let check = state.tabs.find(tab => tab.title === action.payload.title);
             if (check) return { ...state, currentTab : check };
             else return { ...state, tabs : [...state.tabs, action.payload], currentTab : action.payload };
+            }
+            
         case 'TAB_CLOSE':
-            let updatedCurrentTab;
+            {
+                let updatedCurrentTab;
             let updatedTabs = state.tabs;
             let index = state.tabs.findIndex(tab => tab.title === state.currentTab.title);
             updatedTabs.splice(index, 1);
@@ -21,10 +25,18 @@ const tabsReducer = (state = initialState, action) => {
                 updatedCurrentTab = index === 0 ? updatedTabs[0] : updatedTabs[index - 1];
             }
             return { ...state, tabs : updatedTabs, currentTab : updatedCurrentTab };
+            }
+            
         case 'TAB_SWITCH':
             return { ...state, currentTab : action.payload.currentTab };
-        case 'SAVE_DATA':
-            return { ...state, currentTab : { ...state.currentTab, data : action.payload } }
+        case 'SAVE_DATA': {
+            let index = state.tabs.findIndex(tab => tab.title === action.payload.currentTab.title);
+            console.log(index);
+            let tabs = state.tabs;
+            tabs[index] = { ...tabs[index], data : { ingredient : action.payload.ingredient } };
+            console.log(tabs);
+            return { ...state, tabs }
+        }
         default:
             return state;
     }
