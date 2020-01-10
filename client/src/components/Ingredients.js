@@ -11,12 +11,11 @@ const Ingredients = () => {
     const dispatch = useDispatch();
     
     const [ingredients, setIngredients] = React.useState([]);
-    const [loading, setLoading] = React.useState(true);
+    const [loading, setLoading] = React.useState(false);
 
     React.useEffect(() => {
         (async () => {
             try {
-                setLoading(true);
                 const response = await fetch('/api/ingredients');
                 const res = await response.json();
                 // console.log(res);
@@ -30,7 +29,7 @@ const Ingredients = () => {
     }, []);
 
     const addIngredienthandler = () => {
-        dispatch(newTab({ type : 'form', title : 'New Ingredient' }));
+        dispatch(newTab({ type : 'form', title : 'Untitled Ingredient' }));
     }
 
     const columns = {

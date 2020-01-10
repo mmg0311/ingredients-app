@@ -24,3 +24,10 @@ export const saveTabData = (payload) => {
         payload
     }
 }
+
+export const updateTitle = (payload) => {
+    return {
+        type : 'UPDATE_TITLE',
+        payload
+    }
+}
