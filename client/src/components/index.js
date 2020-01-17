@@ -10,6 +10,7 @@ import Tab from './Tab';
 import Sidebar from './Sidebar';
 import Table from './Table';
 import Loader from './Loader';
+import Processing from './Processing';
 
 export {
     Tabs,
@@ -23,5 +24,6 @@ export {
     Body,
     Sidebar,
     Table,
-    Loader
+    Loader,
+    Processing
 }

@@ -10,27 +10,146 @@ import {
     TPanelBody,
     TPanelFooter,
     TPanelHead,
+    ComboBox
 } from '@dailykit/ui';
 
-import { saveTabData, updateTitle } from '../state/actions';
+import { Processing } from './';
+import { saveTabData, updateTitle, tabClose } from '../state/actions';
 
 const Ingredient = ({ data }) => {
 
     const dispatch = useDispatch();
+    const { currentTab } = useSelector(state => state.tabs);
 
     const [loading, setLoading] = React.useState(false);
     const [ingredient, setIngredient] = React.useState({ 
         name : '', 
-        allergens : [{ id : 0, title : 'Allergen 1' }, { id : 2, title : 'Allergen 2' }], 
+        allergens : [], 
         processings : []
     });
-    const [panels, setPanels] = React.useState([
-        'hidden',
-        'hidden',
-        'hidden',
-        'hidden'
-     ])
-    const { currentTab } = useSelector(state => state.tabs);
+
+    // Allergens
+    const [allergensPanels, setAllergensPanels] = React.useState(['hidden']);
+    const [tempAllergens, setTempAllergens] = React.useState([]);
+    const [allergensOptions] = React.useState([
+        { id: 1, title: 'Option1'},
+        { id: 2, title: 'Option2'},
+        { id: 3, title: 'Option3'},
+        { id: 4, title: 'Option4'},
+        { id: 5, title: 'Option5'},
+        { id: 6, title: 'Option6'}
+    ])
+    const selectedAllerganHandler = (options) => {
+        setTempAllergens(options);
+    }
+    const saveAllergens = () => {
+        closePanelAllergens(0);
+        setIngredient({ ...ingredient, allergens : tempAllergens });
+        setTempAllergens([]);
+    }
+    const removeAllergen = (option) => {
+        const temp = ingredient.allergens.filter(op => op.id !== option.id);
+        setIngredient({ ...ingredient, allergens : temp });
+    }
+    const togglePanelAllergens = panel => {
+        const temp = allergensPanels
+        if (panel || panel === 0) {
+           temp[panel] = 'full'
+        }
+        if (panel - 1 || panel - 1 === 0) {
+           temp[panel - 1] = 'partial'
+        }
+        let len = panel - 1
+        if (len > 0) {
+           while (len--) {
+              temp[len] = 'hidden'
+           }
+        }
+        setAllergensPanels([...temp])
+     }
+
+    const closePanelAllergens = panel => {
+        const temp = allergensPanels
+        temp[panel] = 'hidden'
+        if (panel < temp.length - 1 && panel + 1) {
+            temp[panel + 1] = 'hidden'
+        }
+        if (panel - 1 || panel - 1 === 0) {
+            temp[panel - 1] = 'full'
+        }
+        if (panel - 2 || panel - 2 === 0) {
+            temp[panel - 2] = 'partial'
+        }
+        setAllergensPanels([...temp])
+    }
+
+
+    // Processing
+    const [processingPanels, setProcessingPanel] = React.useState(['hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden']);
+    const [tempProcessing, setTempProcessing] = React.useState({ name : { id: null, title : '' }, cost : { value : '' }, yield : '', equipments : [], bulkDensity : '', nutritionalValues : [] });
+    const [tempNutrition, setTempNutrition] = React.useState({ calories : { value : '', unit : '' }, fat : { value : '', unit : '' }, proteins : { value : '', unit : '' }, carbs : { value : '', unit : '' } });
+    const [processingOptions] = React.useState([
+        { id: 1, title: 'Boiled'},
+        { id: 2, title: 'Choped'},
+        { id: 3, title: 'Mashed'},
+        { id: 4, title: 'Fried'}
+    ])
+    const [equipmentsOptions] = React.useState([
+        { id: 1, title: 'Spoon'},
+        { id: 2, title: 'Bottle'},
+        { id: 3, title: 'Fork'},
+        { id: 4, title: 'Jumpsuit'},
+        { id: 5, title: 'Parachute'}
+    ])
+    const selectedProcessingHandler = (option) => {
+        setTempProcessing({ ...tempProcessing, name : option });
+        togglePanelProcessing(1);
+    }
+    const togglePanelProcessing = panel => {
+        const temp = processingPanels
+        if (panel || panel === 0) {
+           temp[panel] = 'full'
+        }
+        if (panel - 1 || panel - 1 === 0) {
+           temp[panel - 1] = 'partial'
+        }
+        let len = panel - 1
+        if (len > 0) {
+           while (len--) {
+              temp[len] = 'hidden'
+           }
+        }
+        setProcessingPanel([...temp])
+     }
+    const closePanelProcessing = panel => {
+        const temp = processingPanels
+        temp[panel] = 'hidden'
+        if (panel < temp.length - 1 && panel + 1) {
+            temp[panel + 1] = 'hidden'
+        }
+        if (panel - 1 || panel - 1 === 0) {
+            temp[panel - 1] = 'full'
+        }
+        if (panel - 2 || panel - 2 === 0) {
+            temp[panel - 2] = 'partial'
+        }
+        setProcessingPanel([...temp])
+    }
+    const saveProcessing = () => {
+        setIngredient({ ...ingredient, processings : [...ingredient.processings, tempProcessing] });
+        setTempProcessing({ name : { id: null, title : '' }, cost : { value : '' }, yield : '', equipments : [], bulkDensity : '', nutritionalValues : [] });
+        closePanelProcessing(1);
+        closePanelProcessing(0);
+    }
+    const saveNutritionalValue = () => {
+        setTempProcessing({ ...tempProcessing, nutritionalValues : tempNutrition });
+        closePanelProcessing(2);
+        setTempNutrition({ calories : { value : '', unit : '' }, fat : { value : '', unit : '' }, proteins : { value : '', unit : '' }, carbs : { value : '', unit : '' } });
+    }
+    const removeNutritionalValue = (option) => {
+        console.log(option);
+    }
+
 
     React.useEffect(() => {
         console.log(data);
@@ -61,37 +180,6 @@ const Ingredient = ({ data }) => {
         dispatch(saveTabData({ currentTab, ingredient }));
     }, [ingredient])
 
-    const togglePanel = panel => {
-        const temp = panels
-        if (panel || panel === 0) {
-           temp[panel] = 'full'
-        }
-        if (panel - 1 || panel - 1 === 0) {
-           temp[panel - 1] = 'partial'
-        }
-        let len = panel - 1
-        if (len > 0) {
-           while (len--) {
-              temp[len] = 'hidden'
-           }
-        }
-        setPanels([...temp])
-     }
-
-    const closePanel = panel => {
-        const temp = panels
-        temp[panel] = 'hidden'
-        if (panel < temp.length - 1 && panel + 1) {
-            temp[panel + 1] = 'hidden'
-        }
-        if (panel - 1 || panel - 1 === 0) {
-            temp[panel - 1] = 'full'
-        }
-        if (panel - 2 || panel - 2 === 0) {
-            temp[panel - 2] = 'partial'
-        }
-        setPanels([...temp])
-    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -106,16 +194,20 @@ const Ingredient = ({ data }) => {
     }
 
     const saveAndExit = async () => {
-        try {
-            const response = await fetch('/api/ingredients', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ingredient})
-            })
-            const res = await response.json();
-            console.log(res);
-        } catch(e) {
-            console.error(e);
+        if (ingredient.name.length) {
+            try {
+                const response = await fetch('/api/ingredients', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ingredient})
+                })
+                const res = await response.json();
+                if (res.success) {
+                    dispatch(tabClose());
+                }
+            } catch(e) {
+                console.error(e);
+            }
         }
     }
 
@@ -142,28 +234,160 @@ const Ingredient = ({ data }) => {
                     <div className="allergens">
                         <div className="label"> Allergans </div>
                         <div className="list-allergens">
-                            <Select options={ ingredient.allergens } addOption={ () => togglePanel(0) } removeOption={ () => console.log('click') }/>
+                            <Select placeholder='Add Allergens' options={ ingredient.allergens } addOption={ () => togglePanelAllergens(0) } removeOption={ removeAllergen }/>
+                            <Tunnel>
+                                <TPanel layer={1} visibility={allergensPanels[0]}>
+                                <TPanelHead>
+                                    <TextButton type='outline' onClick={() => closePanelAllergens(0)}>
+                                        Close
+                                    </TextButton>
+                                    <h3>Select Allergens</h3>
+                                    <TextButton type='solid' onClick={ saveAllergens }>
+                                        Save
+                                    </TextButton>
+                                </TPanelHead>
+                                <TPanelBody>
+                                    <ComboBox
+                                        type='multi'
+                                        options={ allergensOptions }
+                                        selectedOption={ selectedAllerganHandler }
+                                        placeholder="type what you're looking for..."
+                                    />
+                                </TPanelBody>
+                                </TPanel>
+                            </Tunnel>
                         </div>
                     </div>
-                    <div className="allergens">
-                        <div className="label"> Allergans </div>
-                        <div className="list-allergens">
-                            <Select options={ ingredient.allergens } addOption={ () => togglePanel(0) } removeOption={ () => console.log('click') }/>
-                        </div>
-                    </div>
+                    {/* Upload component will come here */}
                 </div>
                 <div className="row">
                     <div className="processings">
                         {
                             ingredient.processings.length > 0 && 
                             <div className="list-processings">
-                                Here
+                                {
+                                    ingredient.processings.map(processing => <Processing key={ processing.name.id } data={ processing }/>)
+                                }
                             </div>
                         }
-                        <div className="add-processing" onClick={ () => console.log('OPENED') }>
+                        <div className="add-processing" onClick={ () => togglePanelProcessing(0) }>
                             <i className="fas fa-plus"></i>
                             Add Processing
                         </div>
+                        <Tunnel>
+                            <TPanel layer={1} visibility={processingPanels[0]}>
+                                <TPanelHead>
+                                    <TextButton type='outline' onClick={() => closePanelProcessing(0)}>
+                                        Close
+                                    </TextButton>
+                                    <h3>Select Processing</h3>
+                                </TPanelHead>
+                                <TPanelBody>
+                                    <ComboBox
+                                        type='single'
+                                        options={ processingOptions }
+                                        selectedOption={ selectedProcessingHandler }
+                                        searchedOption={ (text) => console.log(text) }
+                                        placeholder="type what you're looking for..."
+                                    />
+                                </TPanelBody>
+                            </TPanel>
+                            <TPanel layer={2} visibility={processingPanels[1]}>
+                                <TPanelHead>
+                                    <TextButton type='outline' onClick={() => closePanelProcessing(0)}>
+                                        Close
+                                    </TextButton>
+                                    <h3>Configure Processing: { tempProcessing.name.title }</h3>
+                                    <TextButton type='outline' onClick={ saveProcessing }>
+                                        Save
+                                    </TextButton>
+                                </TPanelHead>
+                                <TPanelBody>
+                                    <div className="row">
+                                        <div className="container">
+                                            <Text
+                                                placeholder='Processing cost'
+                                                name='processing_cost'
+                                                value={ tempProcessing.cost.value }
+                                                onChange={e => setTempProcessing({ ...tempProcessing, cost : { value : e.target.value } })}
+                                            />
+                                        </div>
+                                        <div className="container">
+                                            <Text
+                                                placeholder='Percentage of yield'
+                                                name='percentage_of_yield'
+                                                value={ tempProcessing.yield }
+                                                onChange={e => setTempProcessing({ ...tempProcessing, yield : e.target.value })}
+                                            /> %
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="container">
+                                        <ComboBox
+                                            type='multi'
+                                            options={ equipmentsOptions }
+                                            selectedOption={ (options) => setTempProcessing({ ...tempProcessing, equipments : options }) }
+                                            searchedOption={ (text) => console.log(text) }
+                                            placeholder="search equipments..."
+                                        />
+                                        </div>
+                                        <div className="container">
+                                            <Text
+                                                placeholder='Bulk Density'
+                                                name='bulk_density'
+                                                value={ tempProcessing.bulkDensity }
+                                                onChange={e => setTempProcessing({ ...tempProcessing, bulkDensity : e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <Select
+                                            options={ Object.keys(tempProcessing.nutritionalValues) }
+                                            addOption={ () => togglePanelProcessing(2) }
+                                            placeholder='Add nutritional values'
+                                            removeOption={ removeNutritionalValue }
+                                        />
+                                    </div>
+                                </TPanelBody>
+                            </TPanel>
+                            <TPanel layer={3} visibility={processingPanels[2]}>
+                                <TPanelHead>
+                                    <TextButton type='outline' onClick={() => closePanelProcessing(2)}>
+                                        Close
+                                    </TextButton>
+                                    <h3>Add nutritional values</h3>
+                                    <TextButton type="solid" onClick={ saveNutritionalValue }>
+                                        Save
+                                    </TextButton>
+                                </TPanelHead>
+                                <TPanelBody>
+                                    <Text
+                                        placeholder='Calories'
+                                        name='calories'
+                                        value={ tempNutrition.calories.value }
+                                        onChange={e => setTempNutrition({ ...tempNutrition, calories : { value : e.target.value } })}
+                                    />
+                                    <Text
+                                        placeholder='Fats'
+                                        name='fats'
+                                        value={ tempNutrition.fat.value }
+                                        onChange={e => setTempNutrition({ ...tempNutrition, fat : { value : e.target.value } })}
+                                    />
+                                    <Text
+                                        placeholder='Proteins'
+                                        name='proteins'
+                                        value={ tempNutrition.proteins.value }
+                                        onChange={e => setTempNutrition({ ...tempNutrition, proteins : { value : e.target.value } })}
+                                    />
+                                    <Text
+                                        placeholder='Carbs'
+                                        name='carbs'
+                                        value={ tempNutrition.carbs.value }
+                                        onChange={e => setTempNutrition({ ...tempNutrition, carbs : { value : e.target.value } })}
+                                    />
+                                </TPanelBody>
+                            </TPanel>
+                        </Tunnel>
                     </div>
                 </div>
             </div>
@@ -195,7 +419,13 @@ const Style = styled.div`
             justify-content: space-between;
             margin-bottom: 50px;
 
-            div:not(:last-child) {
+            .container {
+                flex: 1;
+                display: flex;
+                align-items: baseline;
+            }
+
+            > div:not(:last-child) {
                 margin-right: 20px;
             }
         }

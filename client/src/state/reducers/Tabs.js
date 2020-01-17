@@ -1,36 +1,6 @@
 const initialState = {
-    // tabs : [],
-    // currentTab: undefined
-    tabs: [
-        {
-          type: 'list',
-          title: 'Ingredients'
-        },
-        {
-          type: 'form',
-          title: 'Untitled Ingredient',
-          data: {
-            ingredient: {
-              name: '',
-              allergens: [
-                {
-                  id: 0,
-                  title: 'Allergen 1'
-                },
-                {
-                  id: 2,
-                  title: 'Allergen 2'
-                }
-              ],
-              processings: []
-            }
-          }
-        }
-      ],
-      currentTab: {
-        type: 'form',
-        title: 'Untitled Ingredient'
-      }
+    tabs : [],
+    currentTab: undefined
 }
 
 const tabsReducer = (state = initialState, action) => {
