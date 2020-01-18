@@ -16,6 +16,28 @@ import {
 import { Processing } from './';
 import { saveTabData, updateTitle, tabClose } from '../state/actions';
 
+const initialTempState = {
+    allergens : [],
+    processing : { name : { id: null, title : '' }, cost : { value : '' }, yield : '', equipments : [], bulkDensity : '', nutritionalValues : [] },
+    nutritionalValues : { calories : { value : '', unit : '' }, fat : { value : '', unit : '' }, proteins : { value : '', unit : '' }, carbs : { value : '', unit : '' } }
+};
+
+const tempReducer = (state, action) => {
+    switch(action.type) {
+        case 'allergens': {
+            return { ...state, allergens : action.payload }
+        }
+        case 'processing': {
+            return { ...state, processing : { ...state.processing, ...action.payload } };
+        }
+        case 'nutrition' : {
+            return { ...state, nutritionalValues : { ...state.nutritionalValues, ...action.payload } }
+        }
+        default:
+            return state;
+    }
+}
+
 const Ingredient = ({ data }) => {
 
     const dispatch = useDispatch();
@@ -27,10 +49,10 @@ const Ingredient = ({ data }) => {
         allergens : [], 
         processings : []
     });
+    const [temp, dispatchTempAction] = React.useReducer(tempReducer, initialTempState);
 
     // Allergens
     const [allergensPanels, setAllergensPanels] = React.useState(['hidden']);
-    const [tempAllergens, setTempAllergens] = React.useState([]);
     const [allergensOptions] = React.useState([
         { id: 1, title: 'Option1'},
         { id: 2, title: 'Option2'},
@@ -40,12 +62,12 @@ const Ingredient = ({ data }) => {
         { id: 6, title: 'Option6'}
     ])
     const selectedAllerganHandler = (options) => {
-        setTempAllergens(options);
+        dispatchTempAction({ type : 'allergens', payload : options });
     }
     const saveAllergens = () => {
         closePanelAllergens(0);
-        setIngredient({ ...ingredient, allergens : tempAllergens });
-        setTempAllergens([]);
+        setIngredient({ ...ingredient, allergens : temp.allergens });
+        dispatchTempAction({ type : 'allergens', payload : [] });
     }
     const removeAllergen = (option) => {
         const temp = ingredient.allergens.filter(op => op.id !== option.id);
@@ -86,8 +108,6 @@ const Ingredient = ({ data }) => {
 
     // Processing
     const [processingPanels, setProcessingPanel] = React.useState(['hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden']);
-    const [tempProcessing, setTempProcessing] = React.useState({ name : { id: null, title : '' }, cost : { value : '' }, yield : '', equipments : [], bulkDensity : '', nutritionalValues : [] });
-    const [tempNutrition, setTempNutrition] = React.useState({ calories : { value : '', unit : '' }, fat : { value : '', unit : '' }, proteins : { value : '', unit : '' }, carbs : { value : '', unit : '' } });
     const [processingOptions] = React.useState([
         { id: 1, title: 'Boiled'},
         { id: 2, title: 'Choped'},
@@ -102,7 +122,7 @@ const Ingredient = ({ data }) => {
         { id: 5, title: 'Parachute'}
     ])
     const selectedProcessingHandler = (option) => {
-        setTempProcessing({ ...tempProcessing, name : option });
+        dispatchTempAction({ type : 'processing', payload : { name : option } });
         togglePanelProcessing(1);
     }
     const togglePanelProcessing = panel => {
@@ -136,15 +156,15 @@ const Ingredient = ({ data }) => {
         setProcessingPanel([...temp])
     }
     const saveProcessing = () => {
-        setIngredient({ ...ingredient, processings : [...ingredient.processings, tempProcessing] });
-        setTempProcessing({ name : { id: null, title : '' }, cost : { value : '' }, yield : '', equipments : [], bulkDensity : '', nutritionalValues : [] });
+        setIngredient({ ...ingredient, processings : [...ingredient.processings, temp.processing] });
+        dispatchTempAction({ type : 'processing', payload : { name : { id: null, title : '' }, cost : { value : '' }, yield : '', equipments : [], bulkDensity : '', nutritionalValues : [] }});
         closePanelProcessing(1);
         closePanelProcessing(0);
     }
     const saveNutritionalValue = () => {
-        setTempProcessing({ ...tempProcessing, nutritionalValues : tempNutrition });
+        dispatchTempAction({ type : 'processing', payload : { nutritionalValues : temp.nutritionalValues }});
         closePanelProcessing(2);
-        setTempNutrition({ calories : { value : '', unit : '' }, fat : { value : '', unit : '' }, proteins : { value : '', unit : '' }, carbs : { value : '', unit : '' } });
+        dispatchTempAction({ type : 'nutrition', payload : { nutritionalValues : { calories : { value : '', unit : '' }, fat : { value : '', unit : '' }, proteins : { value : '', unit : '' }, carbs : { value : '', unit : '' } } }});
     }
     const removeNutritionalValue = (option) => {
         console.log(option);
@@ -297,7 +317,7 @@ const Ingredient = ({ data }) => {
                                     <TextButton type='outline' onClick={() => closePanelProcessing(0)}>
                                         Close
                                     </TextButton>
-                                    <h3>Configure Processing: { tempProcessing.name.title }</h3>
+                                    <h3>Configure Processing: { temp.processing.name.title }</h3>
                                     <TextButton type='outline' onClick={ saveProcessing }>
                                         Save
                                     </TextButton>
@@ -308,16 +328,16 @@ const Ingredient = ({ data }) => {
                                             <Text
                                                 placeholder='Processing cost'
                                                 name='processing_cost'
-                                                value={ tempProcessing.cost.value }
-                                                onChange={e => setTempProcessing({ ...tempProcessing, cost : { value : e.target.value } })}
+                                                value={ temp.processing.cost.value }
+                                                onChange={e => dispatchTempAction({ type : 'processing', payload : { cost : { value : e.target.value } } })}
                                             />
                                         </div>
                                         <div className="container">
                                             <Text
                                                 placeholder='Percentage of yield'
                                                 name='percentage_of_yield'
-                                                value={ tempProcessing.yield }
-                                                onChange={e => setTempProcessing({ ...tempProcessing, yield : e.target.value })}
+                                                value={ temp.processing.yield }
+                                                onChange={e => dispatchTempAction({ type : 'processing', payload : { yield : e.target.value } })}
                                             /> %
                                         </div>
                                     </div>
@@ -326,7 +346,7 @@ const Ingredient = ({ data }) => {
                                         <ComboBox
                                             type='multi'
                                             options={ equipmentsOptions }
-                                            selectedOption={ (options) => setTempProcessing({ ...tempProcessing, equipments : options }) }
+                                            selectedOption={ (options) => dispatchTempAction({ type : 'processing', payload : { equipments : options } }) }
                                             searchedOption={ (text) => console.log(text) }
                                             placeholder="search equipments..."
                                         />
@@ -335,14 +355,14 @@ const Ingredient = ({ data }) => {
                                             <Text
                                                 placeholder='Bulk Density'
                                                 name='bulk_density'
-                                                value={ tempProcessing.bulkDensity }
-                                                onChange={e => setTempProcessing({ ...tempProcessing, bulkDensity : e.target.value })}
+                                                value={ temp.processing.bulkDensity }
+                                                onChange={e => dispatchTempAction({ type : 'processing', payload : { bulkDensity : e.target.value } })}
                                             />
                                         </div>
                                     </div>
                                     <div className="row">
                                         <Select
-                                            options={ Object.keys(tempProcessing.nutritionalValues) }
+                                            options={ Object.keys(temp.processing.nutritionalValues) }
                                             addOption={ () => togglePanelProcessing(2) }
                                             placeholder='Add nutritional values'
                                             removeOption={ removeNutritionalValue }
@@ -364,26 +384,26 @@ const Ingredient = ({ data }) => {
                                     <Text
                                         placeholder='Calories'
                                         name='calories'
-                                        value={ tempNutrition.calories.value }
-                                        onChange={e => setTempNutrition({ ...tempNutrition, calories : { value : e.target.value } })}
+                                        value={ temp.nutritionalValues.calories.value }
+                                        onChange={e => dispatchTempAction({ type : 'nutrition', payload : { calories : { value : e.target.value } } })}
                                     />
                                     <Text
                                         placeholder='Fats'
                                         name='fats'
-                                        value={ tempNutrition.fat.value }
-                                        onChange={e => setTempNutrition({ ...tempNutrition, fat : { value : e.target.value } })}
+                                        value={ temp.nutritionalValues.fat.value }
+                                        onChange={e =>  dispatchTempAction({ type : 'nutrition', payload : { fat : { value : e.target.value } } })}
                                     />
                                     <Text
                                         placeholder='Proteins'
                                         name='proteins'
-                                        value={ tempNutrition.proteins.value }
-                                        onChange={e => setTempNutrition({ ...tempNutrition, proteins : { value : e.target.value } })}
+                                        value={ temp.nutritionalValues.proteins.value }
+                                        onChange={e =>  dispatchTempAction({ type : 'nutrition', payload : { proteins : { value : e.target.value } } })}
                                     />
                                     <Text
                                         placeholder='Carbs'
                                         name='carbs'
-                                        value={ tempNutrition.carbs.value }
-                                        onChange={e => setTempNutrition({ ...tempNutrition, carbs : { value : e.target.value } })}
+                                        value={ temp.nutritionalValues.carbs.value }
+                                        onChange={e =>  dispatchTempAction({ type : 'nutrition', payload : { carbs : { value : e.target.value } } })}
                                     />
                                 </TPanelBody>
                             </TPanel>
