@@ -18,7 +18,7 @@ import { saveTabData, updateTitle, tabClose } from '../state/actions';
 
 const initialTempState = {
     allergens : [],
-    processing : { name : { id: null, title : '' }, cost : { value : '' }, yield : '', equipments : [], bulkDensity : '', nutritionalValues : [] },
+    processing : { name : { id: null, title : '' }, cost : { value : '' }, yield : '', equipments : [], bulkDensity : '', nutritionalValues : [], sachets : [] },
     nutritionalValues : { calories : { value : '', unit : '' }, fat : { value : '', unit : '' }, proteins : { value : '', unit : '' }, carbs : { value : '', unit : '' } }
 };
 
@@ -291,7 +291,7 @@ const Ingredient = ({ data }) => {
                             </div>
                         }
                         <div className="add-processing" onClick={ () => togglePanelProcessing(0) }>
-                            <i className="fas fa-plus"></i>
+                            <i className="fas fa-plus" />
                             Add Processing
                         </div>
                         <Tunnel>
