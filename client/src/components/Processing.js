@@ -18,15 +18,63 @@ const initialTempState = {
             value : '',
             unit : ''
         },
-        tracking : true
+        tracking : true,
+        mode_of_fulfillment : [
+            // {   
+            //     active : false,
+            //     priority : 1,
+            //     type : 'Real Time',
+            //     station : {
+            //         id : undefined
+            //     }
+            // },
+            // {   
+            //     active : false,
+            //     priority : 2,
+            //     type : 'Copacker',
+            //     station : {
+            //         id : undefined
+            //     }
+            // },
+            // {   
+            //     active : false,
+            //     priority : 3,
+            //     type : 'Planned Lot',
+            //     station : {
+            //         id : undefined
+            //     }
+            // }
+        ]
+    },
+    panel : {
+        heading : ''
+    },
+    mode : {
+        station : {
+            id : undefined,
+            title : ''
+        }
     }
 };
 
 const tempReducer = (state, action) => {
     switch(action.type) {
-        case 'sachet': {
-            console.log(action.payload);
-            return { ...state, sachet : { ...state.sachet , ...action.payload }};
+        case 'SACHET': {
+            return { ...state, sachet : { ...state.sachet, ...action.payload } };
+        }
+        // case 'TRACKING': {
+        //     return { ...state, sachet : { ...state.sachet, tracking : { ...action.payload } } };
+        // }
+        // case 'MODE': {
+        //     const updatedArray = state.mode_of_fulfillment;
+        //     console.log(action.payload);
+        //     return { ...state, mode_of_fulfillment : [ ...updatedArray ] };
+        // }
+        case 'PANEL': {
+            return { ...state, panel : { ...state.panel, ...action.payload } }
+        }
+        case 'MODE': {
+            return { ...state, panel : { ...state.panel, ...action.payload } }
         }
         default:
             return state;
@@ -37,6 +85,69 @@ const tempReducer = (state, action) => {
 const Processing = ({ data }) => {
 
     const [temp, dispatchTempAction] = React.useReducer(tempReducer, initialTempState);
+
+    const modeToggled = (e) => {
+        const { checked, name } = e;
+        if (checked) {
+            dispatchTempAction({ type : 'PANEL', payload : { heading : name }});
+            togglePanelStations(0);
+        }
+        const copyModes = temp.sachet.mode_of_fulfillment;
+        const index = copyModes.findIndex(mode => mode.type === name);
+        console.log(index);
+        if (index != -1) {
+            copyModes[index].active = checked;
+            dispatchTempAction({ type : 'SACHET', payload : { mode_of_fulfillment : copyModes }})
+        }
+    }
+
+    // Stations
+    const [panelsStations, setPanelsStations] = React.useState([
+        'hidden',
+        'hidden'
+    ])
+    const [stationOptions] = React.useState([
+        { id: 1, title: 'Station 1'},
+        { id: 2, title: 'Station 2'},
+        { id: 3, title: 'Station 3'},
+    ])
+    const selectedStationHandler = (option) => {
+        console.log(option);
+        dispatchTempAction({ type : 'MODE',  payload : option });
+        togglePanelStations(1);
+    }
+
+    const togglePanelStations = panel => {
+        const temp = panelsStations
+        if (panel || panel === 0) {
+           temp[panel] = 'full'
+        }
+        if (panel - 1 || panel - 1 === 0) {
+           temp[panel - 1] = 'partial'
+        }
+        let len = panel - 1
+        if (len > 0) {
+           while (len--) {
+              temp[len] = 'hidden'
+           }
+        }
+        setPanelsStations([...temp])
+    }
+  
+     const closePanelStations = panel => {
+        const temp = panelsStations
+        temp[panel] = 'hidden'
+        if (panel < temp.length - 1 && panel + 1) {
+           temp[panel + 1] = 'hidden'
+        }
+        if (panel - 1 || panel - 1 === 0) {
+           temp[panel - 1] = 'full'
+        }
+        if (panel - 2 || panel - 2 === 0) {
+           temp[panel - 2] = 'partial'
+        }
+        setPanelsStations([...temp])
+    }
 
     return(
         <Style>
@@ -95,11 +206,11 @@ const Processing = ({ data }) => {
                             label='Enter Quantity'
                             name='quantity'
                             value={ temp.sachet.quantity.value }
-                            onChange={e => dispatchTempAction({ type : 'processing', payload : { cost : { value : e.target.value } } })}
+                            onChange={e => dispatchTempAction({ type : 'SACHET', payload : { quantity : { value : e.target.value, unit : 'gms' } } } )}
                         />
                         <div className="row">
                             <label> Track inventory </label>
-                            <input type="checkbox" checked={ temp.sachet.tracking } onChange={ (e) => dispatchTempAction({ type : 'sachet', payload : {tracking : e.target.checked} }) }/>
+                            <input type="checkbox" checked={ temp.sachet.tracking } onChange={ (e) => dispatchTempAction({ type : 'SACHET', payload : { tracking : e.target.checked } }) }/>
                         </div>
                         <div className="row">
                             <table cellPadding="0" cellSpacing="0">
@@ -116,7 +227,7 @@ const Processing = ({ data }) => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td> Real Time </td>
+                                        <td> <input type="checkbox" name="Real Time" onChange={ (e) => modeToggled(e.target) }/> Real Time </td>
                                         <td> Station 1 </td>
                                         <td> item1, item2, item3 </td>
                                         <td> 85-100% </td>
@@ -125,7 +236,7 @@ const Processing = ({ data }) => {
                                         <td> Potato </td>
                                     </tr>
                                     <tr>
-                                        <td> Copacker </td>
+                                        <td> <input type="checkbox" name="Copacker" onChange={ (e) => modeToggled(e.target) }/> Copacker </td>
                                         <td> Station 1 </td>
                                         <td> item1, item2, item3 </td>
                                         <td> 85-100% </td>
@@ -134,7 +245,7 @@ const Processing = ({ data }) => {
                                         <td> Potato </td>
                                     </tr>
                                     <tr>
-                                        <td> Planned lot </td>
+                                        <td> <input type="checkbox" name="Planned Lot" onChange={ (e) => modeToggled(e.target) }/> Planned lot </td>
                                         <td> Station 1 </td>
                                         <td> item1, item2, item3 </td>
                                         <td> 85-100% </td>
@@ -144,6 +255,35 @@ const Processing = ({ data }) => {
                                     </tr>
                                 </tbody>
                             </table>
+                            <Tunnel>
+                                <TPanel layer={1} visibility={panelsStations[0]}>
+                                <TPanelHead>
+                                    <TextButton type='outline' onClick={() => closePanelStations(0)}>
+                                        Close
+                                    </TextButton>
+                                    <h3>Select station for { temp.panel.heading }</h3>
+                                </TPanelHead>
+                                <TPanelBody>
+                                    <ComboBox
+                                        type='single'
+                                        options={ stationOptions }
+                                        selectedOption={ selectedStationHandler }
+                                        placeholder="type what you're looking for..."
+                                    />
+                                </TPanelBody>
+                                </TPanel>
+                                <TPanel layer={2} visibility={panelsStations[1]}>
+                                <TPanelHead>
+                                    <TextButton type='outline' onClick={() => closePanelStations(1)}>
+                                        Close
+                                    </TextButton>
+                                    <h3>Configure station for { temp.panel.heading }</h3>
+                                </TPanelHead>
+                                <TPanelBody>
+                                    
+                                </TPanelBody>
+                                </TPanel>
+                            </Tunnel>
                         </div>
                     </div>
                 </div>
