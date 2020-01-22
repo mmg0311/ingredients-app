@@ -53,8 +53,10 @@ const initialTempState = {
         station : {
             id : undefined,
             title : ''
-        }
-    }
+        },
+        supplierItems : []
+    },
+    supplierItems : []
 };
 
 const tempReducer = (state, action) => {
@@ -70,11 +72,11 @@ const tempReducer = (state, action) => {
         //     console.log(action.payload);
         //     return { ...state, mode_of_fulfillment : [ ...updatedArray ] };
         // }
-        case 'PANEL': {
-            return { ...state, panel : { ...state.panel, ...action.payload } }
-        }
         case 'MODE': {
-            return { ...state, panel : { ...state.panel, ...action.payload } }
+            return { ...state, mode : { ...state.mode, ...action.payload } }
+        }
+        case 'SUPPLIER': {
+            return { ...state, supplierItems : action.payload }
         }
         default:
             return state;
@@ -89,7 +91,7 @@ const Processing = ({ data }) => {
     const modeToggled = (e) => {
         const { checked, name } = e;
         if (checked) {
-            dispatchTempAction({ type : 'PANEL', payload : { heading : name }});
+            dispatchTempAction({ type : 'MODE', payload : { type : name }});
             togglePanelStations(0);
         }
         const copyModes = temp.sachet.mode_of_fulfillment;
@@ -147,6 +149,58 @@ const Processing = ({ data }) => {
            temp[panel - 2] = 'partial'
         }
         setPanelsStations([...temp])
+    }
+
+    // Supplier Items
+    const supplierItemsOptions = [
+        {id: 1, title: 'Item 1'},
+        {id: 2, title: 'Item 2'},
+        {id: 3, title: 'Item 3'},
+    ]
+    const selectedSupplierItemsHandler = (options) => {
+        dispatchTempAction({ type : 'SUPPLIER', payload : options });
+    }
+    const removeSupplierItem = (option) => {
+        console.log(option);
+    }
+    const saveSupplierItems = () => {
+        dispatchTempAction({ type : 'MODE', payload : { supplierItems : temp.supplierItems } });
+        dispatchTempAction({ type : 'SUPPLIER', payload : [] });
+        closePanelSupplierItems(0);
+    }
+    const [panelsSupplierItems, setPanelsSupplierItems] = React.useState([
+        'hidden'
+    ])
+    const togglePanelSupplierItems = panel => {
+        const temp = panelsSupplierItems
+        if (panel || panel === 0) {
+           temp[panel] = 'full'
+        }
+        if (panel - 1 || panel - 1 === 0) {
+           temp[panel - 1] = 'partial'
+        }
+        let len = panel - 1
+        if (len > 0) {
+           while (len--) {
+              temp[len] = 'hidden'
+           }
+        }
+        setPanelsSupplierItems([...temp])
+    }
+  
+     const closePanelSupplierItems = panel => {
+        const temp = panelsSupplierItems
+        temp[panel] = 'hidden'
+        if (panel < temp.length - 1 && panel + 1) {
+           temp[panel + 1] = 'hidden'
+        }
+        if (panel - 1 || panel - 1 === 0) {
+           temp[panel - 1] = 'full'
+        }
+        if (panel - 2 || panel - 2 === 0) {
+           temp[panel - 2] = 'partial'
+        }
+        setPanelsSupplierItems([...temp])
     }
 
     return(
@@ -261,7 +315,7 @@ const Processing = ({ data }) => {
                                     <TextButton type='outline' onClick={() => closePanelStations(0)}>
                                         Close
                                     </TextButton>
-                                    <h3>Select station for { temp.panel.heading }</h3>
+                                    <h3>Select station for { temp.mode.type }</h3>
                                 </TPanelHead>
                                 <TPanelBody>
                                     <ComboBox
@@ -272,15 +326,59 @@ const Processing = ({ data }) => {
                                     />
                                 </TPanelBody>
                                 </TPanel>
-                                <TPanel layer={2} visibility={panelsStations[1]}>
+                                <TPanel layer={2} visibility={panelsStations[1]} type='wide'>
                                 <TPanelHead>
                                     <TextButton type='outline' onClick={() => closePanelStations(1)}>
                                         Close
                                     </TextButton>
-                                    <h3>Configure station for { temp.panel.heading }</h3>
+                                    <h3>Configure station for { temp.mode.type }</h3>
                                 </TPanelHead>
                                 <TPanelBody>
-                                    
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th> Stations </th>
+                                                <th> Supplier items </th>
+                                                <th> Accuracy range </th>
+                                                <th> Packaging </th>
+                                                <th> Add Label </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td> { temp.mode.type } </td>
+                                                <td>
+                                                <Select
+                                                    options={ temp.mode.supplierItems }
+                                                    addOption={ () => togglePanelSupplierItems(0) }
+                                                    placeholder='Add Supplier items'
+                                                    removeOption={ removeSupplierItem }
+                                                />
+                                                <Tunnel>
+                                                    <TPanel layer={1} visibility={panelsSupplierItems[0]}>
+                                                    <TPanelHead>
+                                                        <TextButton type='outline' onClick={() => closePanelSupplierItems(0)}>
+                                                            Close
+                                                        </TextButton>
+                                                        <h3>Select Supplier items for { temp.panel.heading }</h3>
+                                                        <TextButton type='solid' onClick={ saveSupplierItems }>
+                                                            Save
+                                                        </TextButton>
+                                                    </TPanelHead>
+                                                    <TPanelBody>
+                                                        <ComboBox
+                                                            type='multi'
+                                                            options={ supplierItemsOptions }
+                                                            selectedOption={ selectedSupplierItemsHandler }
+                                                            placeholder="type what you're looking for..."
+                                                        />
+                                                    </TPanelBody>
+                                                    </TPanel>
+                                                </Tunnel>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </TPanelBody>
                                 </TPanel>
                             </Tunnel>
