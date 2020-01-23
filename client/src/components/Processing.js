@@ -9,7 +9,9 @@ import {
     TPanelBody,
     TPanelFooter,
     TPanelHead,
-    ComboBox
+    ComboBox,
+    RadioGroup,
+    Toggle
 } from '@dailykit/ui';
 
 const initialTempState = {
@@ -20,41 +22,27 @@ const initialTempState = {
         },
         tracking : true,
         mode_of_fulfillment : [
-            // {   
-            //     active : false,
-            //     priority : 1,
-            //     type : 'Real Time',
-            //     station : {
-            //         id : undefined
-            //     }
-            // },
-            // {   
-            //     active : false,
-            //     priority : 2,
-            //     type : 'Copacker',
-            //     station : {
-            //         id : undefined
-            //     }
-            // },
-            // {   
-            //     active : false,
-            //     priority : 3,
-            //     type : 'Planned Lot',
-            //     station : {
-            //         id : undefined
-            //     }
-            // }
+            
         ]
-    },
-    panel : {
-        heading : ''
     },
     mode : {
         station : {
             id : undefined,
             title : ''
         },
-        supplierItems : []
+        supplierItems : [],
+        accuracy : {
+            id : undefined,
+            title : ''
+        },
+        packaging : {
+
+        },
+        label : {
+            active : true,
+            slip : '',
+            template : undefined
+        }
     },
     supplierItems : []
 };
@@ -64,14 +52,6 @@ const tempReducer = (state, action) => {
         case 'SACHET': {
             return { ...state, sachet : { ...state.sachet, ...action.payload } };
         }
-        // case 'TRACKING': {
-        //     return { ...state, sachet : { ...state.sachet, tracking : { ...action.payload } } };
-        // }
-        // case 'MODE': {
-        //     const updatedArray = state.mode_of_fulfillment;
-        //     console.log(action.payload);
-        //     return { ...state, mode_of_fulfillment : [ ...updatedArray ] };
-        // }
         case 'MODE': {
             return { ...state, mode : { ...state.mode, ...action.payload } }
         }
@@ -203,6 +183,38 @@ const Processing = ({ data }) => {
         setPanelsSupplierItems([...temp])
     }
 
+    // Accuracy
+    const accuracyOptions = [
+        { id : 1, title : '85-100%'},
+        {id : 2, title : 'Below 85%'},
+        {id : 3, title : 'don\'t weigh'}
+    ]
+
+    const saveMode = () => {
+        dispatchTempAction({ type : 'SACHET', payload : { ...temp.sachet, mode_of_fulfillment : [...temp.sachet.mode_of_fulfillment, temp.mode] } })
+        dispatchTempAction({ type : 'MODE', payload : {
+            station : {
+                id : undefined,
+                title : ''
+            },
+            supplierItems : [],
+            accuracy : {
+                id : undefined,
+                title : ''
+            },
+            packaging : {
+    
+            },
+            label : {
+                active : true,
+                slip : '',
+                template : undefined
+            }
+        } })
+        closePanelStations(1);
+        closePanelStations(0);
+    }
+
     return(
         <Style>
             <div className="info">
@@ -332,6 +344,9 @@ const Processing = ({ data }) => {
                                         Close
                                     </TextButton>
                                     <h3>Configure station for { temp.mode.type }</h3>
+                                    <TextButton type='solid' onClick={ saveMode }>
+                                        Save
+                                    </TextButton>
                                 </TPanelHead>
                                 <TPanelBody>
                                     <table>
@@ -360,7 +375,7 @@ const Processing = ({ data }) => {
                                                         <TextButton type='outline' onClick={() => closePanelSupplierItems(0)}>
                                                             Close
                                                         </TextButton>
-                                                        <h3>Select Supplier items for { temp.panel.heading }</h3>
+                                                        <h3>Select Supplier items for { temp.mode.type }</h3>
                                                         <TextButton type='solid' onClick={ saveSupplierItems }>
                                                             Save
                                                         </TextButton>
@@ -375,6 +390,22 @@ const Processing = ({ data }) => {
                                                     </TPanelBody>
                                                     </TPanel>
                                                 </Tunnel>
+                                                </td>
+                                                <td>
+                                                    <RadioGroup options={ accuracyOptions } onChange={ (option) => dispatchTempAction({ type : 'MODE', payload : { accuracy : option } }) }/>
+                                                </td>
+                                                <td>
+                                                    TBD with Ananya
+                                                </td>
+                                                <td>
+                                                    <Toggle checked={ temp.mode.label.active } setChecked={ (value) => dispatchTempAction({ type : 'MODE', payload : { label : { ...temp.mode.label, active : value } } }) }/>
+                                                    <br />
+                                                    <Text
+                                                        label='Name the slip'
+                                                        name='slip'
+                                                        value={ temp.mode.label.slip }
+                                                        onChange={ (e) => dispatchTempAction({ type : 'MODE', payload : { label : { ...temp.mode.label, slip : e.target.value } } }) }
+                                                    />
                                                 </td>
                                             </tr>
                                         </tbody>
