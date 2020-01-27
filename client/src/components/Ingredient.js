@@ -171,6 +171,16 @@ const Ingredient = ({ data }) => {
     }
 
 
+    const addSachet = (id, sachet) => {
+        const index = ingredient.processings.findIndex(processing => processing.name.id === id);
+        const removedProcessing = ingredient.processings[index];
+        const copyProcessings = ingredient.processings;
+        copyProcessings.splice(index, 1);
+        removedProcessing.sachets.push(sachet);
+        copyProcessings.push(removedProcessing);
+        setIngredient({ ...ingredient, processings : copyProcessings });
+    }
+
     React.useEffect(() => {
         console.log(data);
         if (data) {
@@ -186,6 +196,7 @@ const Ingredient = ({ data }) => {
                         body : JSON.stringify({ path : currentTab.path })
                     });
                     const res = await response.json();
+                    console.log(res.data.ingredient);
                     setIngredient(res.data.ingredient);
                     setLoading(false);
                 } catch(e) {
@@ -286,7 +297,7 @@ const Ingredient = ({ data }) => {
                             ingredient.processings.length > 0 && 
                             <div className="list-processings">
                                 {
-                                    ingredient.processings.map(processing => <Processing key={ processing.name.id } data={ processing }/>)
+                                    ingredient.processings.map(processing => <Processing key={ processing.name.id } data={ processing } addSachetToProcessing={ (sachet) => addSachet(processing.name.id, sachet) }/>)
                                 }
                             </div>
                         }

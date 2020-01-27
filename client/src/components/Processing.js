@@ -11,7 +11,8 @@ import {
     TPanelHead,
     ComboBox,
     RadioGroup,
-    Toggle
+    Toggle,
+    TextAndSelect
 } from '@dailykit/ui';
 
 const initialTempState = {
@@ -21,11 +22,77 @@ const initialTempState = {
             unit : ''
         },
         tracking : true,
-        mode_of_fulfillment : [
-            
+        modes : [
+            {
+                active : false,
+                type : 'Real Time',
+                priority : 1,
+                station : {
+                    id : undefined,
+                    title : ''
+                },
+                supplierItems : [],
+                accuracy : {
+                    id : undefined,
+                    title : ''
+                },
+                packaging : {
+        
+                },
+                label : {
+                    active : true,
+                    slip : '',
+                    template : undefined
+                }
+            },
+            {
+                active : false,
+                type : 'Copacker',
+                priority : 2,
+                station : {
+                    id : undefined,
+                    title : ''
+                },
+                supplierItems : [],
+                accuracy : {
+                    id : undefined,
+                    title : ''
+                },
+                packaging : {
+        
+                },
+                label : {
+                    active : true,
+                    slip : '',
+                    template : undefined
+                }
+            },
+            {
+                active : false,
+                type : 'Planned Lot',
+                priority : 3,
+                station : {
+                    id : undefined,
+                    title : ''
+                },
+                supplierItems : [],
+                accuracy : {
+                    id : undefined,
+                    title : ''
+                },
+                packaging : {
+        
+                },
+                label : {
+                    active : true,
+                    slip : '',
+                    template : undefined
+                }
+            }
         ]
     },
     mode : {
+        type : '',
         station : {
             id : undefined,
             title : ''
@@ -64,22 +131,103 @@ const tempReducer = (state, action) => {
 }
 
 
-const Processing = ({ data }) => {
+const Processing = ({ data, addSachetToProcessing }) => {
 
     const [temp, dispatchTempAction] = React.useReducer(tempReducer, initialTempState);
+    const [isAdding, setIsAdding] = React.useState(false);
 
-    const modeToggled = (e) => {
+    const saveSachet = () => {
+        addSachetToProcessing(temp.sachet);
+        dispatchTempAction({ type : 'SACHET', payload : {
+                quantity : {
+                    value : '',
+                    unit : ''
+                },
+                tracking : true,
+                modes : [
+                    {
+                        active : false,
+                        type : 'Real Time',
+                        priority : 1,
+                        station : {
+                            id : undefined,
+                            title : ''
+                        },
+                        supplierItems : [],
+                        accuracy : {
+                            id : undefined,
+                            title : ''
+                        },
+                        packaging : {
+                
+                        },
+                        label : {
+                            active : true,
+                            slip : '',
+                            template : undefined
+                        }
+                    },
+                    {
+                        active : false,
+                        type : 'Copacker',
+                        priority : 2,
+                        station : {
+                            id : undefined,
+                            title : ''
+                        },
+                        supplierItems : [],
+                        accuracy : {
+                            id : undefined,
+                            title : ''
+                        },
+                        packaging : {
+                
+                        },
+                        label : {
+                            active : true,
+                            slip : '',
+                            template : undefined
+                        }
+                    },
+                    {
+                        active : false,
+                        type : 'Planned Lot',
+                        priority : 3,
+                        station : {
+                            id : undefined,
+                            title : ''
+                        },
+                        supplierItems : [],
+                        accuracy : {
+                            id : undefined,
+                            title : ''
+                        },
+                        packaging : {
+                
+                        },
+                        label : {
+                            active : true,
+                            slip : '',
+                            template : undefined
+                        }
+                    }
+                ]
+        } })
+        setIsAdding(false);
+    }
+
+    const toggleMode = (e) => {
         const { checked, name } = e;
         if (checked) {
             dispatchTempAction({ type : 'MODE', payload : { type : name }});
             togglePanelStations(0);
         }
-        const copyModes = temp.sachet.mode_of_fulfillment;
+        const copyModes = temp.sachet.modes;
         const index = copyModes.findIndex(mode => mode.type === name);
         console.log(index);
         if (index != -1) {
             copyModes[index].active = checked;
-            dispatchTempAction({ type : 'SACHET', payload : { mode_of_fulfillment : copyModes }})
+            dispatchTempAction({ type : 'SACHET', payload : { modes : copyModes }})
         }
     }
 
@@ -91,11 +239,10 @@ const Processing = ({ data }) => {
     const [stationOptions] = React.useState([
         { id: 1, title: 'Station 1'},
         { id: 2, title: 'Station 2'},
-        { id: 3, title: 'Station 3'},
+        { id: 3, title: 'Station 3'}
     ])
     const selectedStationHandler = (option) => {
-        console.log(option);
-        dispatchTempAction({ type : 'MODE',  payload : option });
+        dispatchTempAction({ type : 'MODE',  payload : { station : option }});
         togglePanelStations(1);
     }
 
@@ -189,10 +336,20 @@ const Processing = ({ data }) => {
         {id : 2, title : 'Below 85%'},
         {id : 3, title : 'don\'t weigh'}
     ]
+    const quantityOptions = [
+        { id : 1, title : 'gms' },
+        { id : 2, title : 'lbs' },
+        { id : 3, title : 'kgs' }
+    ]
 
     const saveMode = () => {
-        dispatchTempAction({ type : 'SACHET', payload : { ...temp.sachet, mode_of_fulfillment : [...temp.sachet.mode_of_fulfillment, temp.mode] } })
+        const index = temp.sachet.modes.findIndex(mode => mode.type === temp.mode.type);
+        let newModes = temp.sachet.modes;
+        let removedMode = temp.sachet.modes[index];
+        newModes[index] = { ...temp.mode, priority : removedMode.priority };  
+        dispatchTempAction({ type : 'SACHET', payload : { ...temp.sachet, modes : newModes } })
         dispatchTempAction({ type : 'MODE', payload : {
+            type : '',
             station : {
                 id : undefined,
                 title : ''
@@ -211,6 +368,7 @@ const Processing = ({ data }) => {
                 template : undefined
             }
         } })
+        
         closePanelStations(1);
         closePanelStations(0);
     }
@@ -267,16 +425,22 @@ const Processing = ({ data }) => {
                     </div>    
                 }
                 <div className="row">
-                    <div className="new-sachet">
-                        <Text
-                            label='Enter Quantity'
-                            name='quantity'
-                            value={ temp.sachet.quantity.value }
-                            onChange={e => dispatchTempAction({ type : 'SACHET', payload : { quantity : { value : e.target.value, unit : 'gms' } } } )}
-                        />
-                        <div className="row">
-                            <label> Track inventory </label>
-                            <input type="checkbox" checked={ temp.sachet.tracking } onChange={ (e) => dispatchTempAction({ type : 'SACHET', payload : { tracking : e.target.checked } }) }/>
+                    <div className="new-sachet" hidden={ !isAdding }>
+                        <div className="row quantity">
+                            <TextAndSelect
+                                label='Enter Quantity'
+                                name='quantity'
+                                value={ temp.sachet.quantity.value }
+                                onChange={changed => dispatchTempAction({ type : 'SACHET', payload : { quantity : { value : changed.field.value, unit : changed.unit.title} } })}
+                                options={ quantityOptions }
+                            />
+                        </div>
+                        <div className="row tracking">
+                            <Toggle
+                                checked={ temp.sachet.tracking }
+                                label='Track Inventory'
+                                setChecked={ (val) => dispatchTempAction({ type : 'SACHET', payload : { tracking : val } }) }
+                            />
                         </div>
                         <div className="row">
                             <table cellPadding="0" cellSpacing="0">
@@ -292,33 +456,19 @@ const Processing = ({ data }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td> <input type="checkbox" name="Real Time" onChange={ (e) => modeToggled(e.target) }/> Real Time </td>
-                                        <td> Station 1 </td>
-                                        <td> item1, item2, item3 </td>
-                                        <td> 85-100% </td>
-                                        <td> Packet 1 </td>
-                                        <td>  </td>
-                                        <td> Potato </td>
-                                    </tr>
-                                    <tr>
-                                        <td> <input type="checkbox" name="Copacker" onChange={ (e) => modeToggled(e.target) }/> Copacker </td>
-                                        <td> Station 1 </td>
-                                        <td> item1, item2, item3 </td>
-                                        <td> 85-100% </td>
-                                        <td> Packet 2 </td>
-                                        <td>  </td>
-                                        <td> Potato </td>
-                                    </tr>
-                                    <tr>
-                                        <td> <input type="checkbox" name="Planned Lot" onChange={ (e) => modeToggled(e.target) }/> Planned lot </td>
-                                        <td> Station 1 </td>
-                                        <td> item1, item2, item3 </td>
-                                        <td> 85-100% </td>
-                                        <td> Packet 1 </td>
-                                        <td>  </td>
-                                        <td> Potato </td>
-                                    </tr>
+                                    {
+                                        temp.sachet.modes.map(mode => (
+                                            <tr key={ mode.priority }>
+                                                <td> <input type="checkbox" name={ mode.type } onChange={ (e) => toggleMode(e.target) } checked={ mode.active }/> { mode.type } </td>
+                                                <td> { mode.station.id ?  mode.station.title : '...' } </td>
+                                                <td> { mode.supplierItems.length ? mode.supplierItems.join() : '...' } </td>
+                                                <td> { mode.accuracy.id ? mode.accuracy.title : '...' } </td>
+                                                <td>  </td>
+                                                <td>  </td>
+                                                <td> { mode.label.slip.length ? mode.label.slip : '...' } </td>
+                                            </tr>
+                                        ))
+                                    }
                                 </tbody>
                             </table>
                             <Tunnel>
@@ -414,10 +564,13 @@ const Processing = ({ data }) => {
                                 </TPanel>
                             </Tunnel>
                         </div>
+                        <div className="row save-sachet">
+                            <TextButton type='ghost' onClick={ saveSachet }>Save Sachet</TextButton>
+                        </div>
                     </div>
                 </div>
                 <div className="row">
-                    <div className="add-sachet">
+                    <div className="add-sachet" onClick={ () => setIsAdding(true) }>
                         <i className="fas fa-plus" />
                         Add Sachet
                     </div>
@@ -494,6 +647,7 @@ const Style = styled.div`
             text-align: center;
             padding: 20px;
             background: #FFFFFF;
+            width: 100%;
             border: 1px dashed #F3F3F3;
             box-sizing: border-box;
             box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.13);
@@ -511,6 +665,17 @@ const Style = styled.div`
             background: #FFFFFF;
             border: 1px dashed #F3F3F3;
             width: 100%;
+
+            .quantity {
+                max-width: 300px;
+            }
+
+            .tracking {
+                font-weight: 500;
+                font-size: 16px;
+                line-height: 14px;
+                color: #555B6E;
+            }
 
             table {
                 width: 100%;
@@ -544,6 +709,11 @@ const Style = styled.div`
                         }
                     }
                 }
+            }
+
+            .save-sachet {
+                display: flex;
+                justify-content: flex-end;
             }
         }
     }
